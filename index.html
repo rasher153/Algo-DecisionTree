@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panduan Interaktif Algoritma Decision Tree dengan Gemini AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Lora', serif;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #0ea5e9; /* sky-500 */
+            border-bottom-color: #0ea5e9;
+        }
+        .tab-button.active {
+            background-color: #0ea5e9; /* sky-500 */
+            color: white;
+        }
+        .tree-node, .quick-nav-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .tree-node:hover, .quick-nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .highlight-path {
+            border: 3px solid #f59e0b; /* amber-500 */
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+        }
+        .gemini-button {
+            transition: all 0.3s ease;
+        }
+        .gemini-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0ea5e9;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; 
+            max-height: 450px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-slate-900">Decision Tree</a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#konsep" class="nav-link py-1">Konsep</a>
+                <a href="#cara-kerja" class="nav-link py-1">Cara Kerja</a>
+                <a href="#jenis" class="nav-link py-1">Jenis Algoritma</a>
+                <a href="#overfitting" class="nav-link py-1">Overfitting</a>
+                <a href="#aplikasi" class="nav-link py-1">Aplikasi</a>
+                <a href="#perbandingan" class="nav-link py-1">Perbandingan</a>
+                <a href="#kelebihan-kekurangan" class="nav-link py-1">Pro & Kontra</a>
+                <a href="#kesimpulan" class="nav-link py-1">Kesimpulan</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-6 pb-4">
+            <a href="#konsep" class="block py-2 text-center nav-link">Konsep</a>
+            <a href="#cara-kerja" class="block py-2 text-center nav-link">Cara Kerja</a>
+            <a href="#jenis" class="block py-2 text-center nav-link">Jenis Algoritma</a>
+            <a href="#overfitting" class="block py-2 text-center nav-link">Overfitting</a>
+            <a href="#aplikasi" class="block py-2 text-center nav-link">Aplikasi</a>
+            <a href="#perbandingan" class="block py-2 text-center nav-link">Perbandingan</a>
+            <a href="#kelebihan-kekurangan" class="block py-2 text-center nav-link">Pro & Kontra</a>
+            <a href="#kesimpulan" class="block py-2 text-center nav-link">Kesimpulan</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-16">
+
+        <!-- Hero Section -->
+        <section class="text-center mb-20">
+            <h1 class="text-4xl md:text-6xl font-bold text-slate-900 mb-4 leading-tight">Menjelajahi Algoritma Decision Tree</h1>
+            <p class="text-lg text-slate-600 max-w-3xl mx-auto">
+                Sebuah panduan interaktif untuk memahami salah satu algoritma machine learning yang paling intuitif, dari konsep dasar hingga implementasi praktis.
+            </p>
+        </section>
+
+        <!-- Group Intro Section -->
+        <section id="kelompok" class="mb-20 scroll-mt-24">
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h2 class="text-3xl font-bold text-center mb-2 text-slate-900">Presentasi Kelompok 9</h2>
+                <p class="text-center text-slate-500 mb-8">Mata Kuliah: Algoritma dan Struktur Data 2</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <!-- Anggota 1 -->
+                    <div class="flex flex-col items-center">
+                        <img src="ilham.jpg" alt="Foto Profil Andi Muhamad Nur Ilhami" class="w-32 h-32 rounded-full mb-4 shadow-md object-cover">
+                        <h3 class="font-bold text-lg text-slate-800">Andi Muhamad Nur Ilhami</h3>
+                        <p class="text-slate-500">10121304</p>
+                    </div>
+                    <!-- Anggota 2 -->
+                    <div class="flex flex-col items-center">
+                        <img src="kris.jpg" alt="Foto Profil Kristanto" class="w-32 h-32 rounded-full mb-4 shadow-md object-cover">
+                        <h3 class="font-bold text-lg text-slate-800">Kristanto</h3>
+                        <p class="text-slate-500">10121309</p>
+                    </div>
+                    <!-- Anggota 3 -->
+                    <div class="flex flex-col items-center">
+                        <img src="rafli.jpg" alt="Foto Profil Rafly Sidiq Hermawan" class="w-32 h-32 rounded-full mb-4 shadow-md object-cover">
+                        <h3 class="font-bold text-lg text-slate-800">Rafly Sidiq Hermawan</h3>
+                        <p class="text-slate-500">10121311</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Navigation -->
+        <section id="navigasi-cepat" class="mb-20">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">Navigasi Cepat</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 text-center">
+                <a href="#konsep" class="quick-nav-card bg-white p-6 rounded-lg shadow-md">
+                    <span class="text-4xl">🌳</span>
+                    <h3 class="font-semibold mt-2">Konsep</h3>
+                </a>
+                <a href="#cara-kerja" class="quick-nav-card bg-white p-6 rounded-lg shadow-md">
+                    <span class="text-4xl">⚙️</span>
+                    <h3 class="font-semibold mt-2">Cara Kerja</h3>
+                </a>
+                <a href="#jenis" class="quick-nav-card bg-white p-6 rounded-lg shadow-md">
+                    <span class="text-4xl">🗂️</span>
+                    <h3 class="font-semibold mt-2">Jenis</h3>
+                </a>
+                <a href="#overfitting" class="quick-nav-card bg-white p-6 rounded-lg shadow-md">
+                    <span class="text-4xl">🎯</span>
+                    <h3 class="font-semibold mt-2">Overfitting</h3>
+                </a>
+                <a href="#aplikasi" class="quick-nav-card bg-white p-6 rounded-lg shadow-md">
+                    <span class="text-4xl">💡</span>
+                    <h3 class="font-semibold mt-2">Aplikasi</h3>
+                </a>
+                <a href="#perbandingan" class="quick-nav-card bg-white p-6 rounded-lg shadow-md">
+                    <span class="text-4xl">🔄</span>
+                    <h3 class="font-semibold mt-2">Perbandingan</h3>
+                </a>
+                 <a href="#kesimpulan" class="quick-nav-card bg-white p-6 rounded-lg shadow-md">
+                    <span class="text-4xl">📚</span>
+                    <h3 class="font-semibold mt-2">Kesimpulan</h3>
+                </a>
+            </div>
+        </section>
+
+        <!-- Konsep Dasar -->
+        <section id="konsep" class="mb-20 scroll-mt-24">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-slate-900">Konsep Dasar</h2>
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <p class="text-center text-slate-600 mb-12 max-w-3xl mx-auto">
+                    Secara sederhana, Decision Tree meniru cara manusia mengambil keputusan: dengan serangkaian pertanyaan "jika-maka". Struktur ini memecah masalah kompleks menjadi keputusan-keputusan sederhana yang membentuk diagram alir seperti pohon.
+                </p>
+                <div class="flex flex-col lg:flex-row items-center gap-8">
+                    <div class="w-full lg:w-1/2">
+                        <h3 class="text-2xl font-semibold mb-4 text-slate-800">Anatomi Pohon Keputusan</h3>
+                        <p class="text-slate-600 mb-6">Arahkan kursor Anda ke setiap elemen pada diagram di samping untuk melihat penjelasannya. Memahami komponen ini adalah kunci untuk menginterpretasikan model.</p>
+                        <div id="anatomy-info-box" class="p-4 bg-sky-50 border-l-4 border-sky-500 rounded-r-lg min-h-[120px] transition-all duration-300">
+                            <h4 class="font-bold text-sky-800 text-lg">Arahkan Kursor</h4>
+                            <p class="text-sky-700">Pilih salah satu elemen pohon untuk detail.</p>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/2 flex justify-center">
+                        <div class="space-y-4 text-center font-medium">
+                            <div data-title="Root Node (Simpul Akar)" data-text="Titik awal pohon yang merepresentasikan seluruh dataset. Dari sini, pemisahan pertama dilakukan." class="tree-node bg-emerald-500 text-white py-3 px-6 rounded-lg mx-auto w-56 shadow">Root Node</div>
+                            <div class="h-10 w-1 bg-slate-300 mx-auto"></div>
+                            <div class="flex justify-around gap-4">
+                                <div data-title="Internal Node (Simpul Internal)" data-text="Mewakili sebuah 'tes' pada suatu fitur. Simpul ini memiliki cabang ke node lain." class="tree-node bg-cyan-500 text-white py-3 px-6 rounded-lg shadow">Internal Node</div>
+                                <div data-title="Branch (Cabang)" data-text="Garis yang menghubungkan node, mewakili hasil dari sebuah tes (misal: 'Ya' atau 'Tidak')." class="tree-node bg-slate-400 text-white py-3 px-6 rounded-lg shadow">Branch</div>
+                            </div>
+                             <div class="flex justify-around">
+                                <div class="h-10 w-1 bg-slate-300"></div>
+                                <div class="h-10 w-1 bg-slate-300 opacity-0"></div>
+                             </div>
+                            <div class="flex justify-around gap-4">
+                                <div data-title="Leaf Node (Simpul Daun)" data-text="Node terminal yang memberikan hasil akhir atau prediksi (misal: 'Beli' atau 'Jangan Beli')." class="tree-node bg-amber-500 text-white py-3 px-6 rounded-lg shadow">Leaf Node</div>
+                                <div data-title="Leaf Node (Simpul Daun)" data-text="Node terminal yang memberikan hasil akhir atau prediksi (misal: 'Beli' atau 'Jangan Beli')." class="tree-node bg-amber-500 text-white py-3 px-6 rounded-lg shadow">Leaf Node</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cara Kerja -->
+        <section id="cara-kerja" class="mb-20 scroll-mt-24">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-slate-900">Bagaimana Decision Tree Bekerja?</h2>
+            
+            <!-- Partisi Rekursif -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg mb-8">
+                <h3 class="text-2xl font-semibold mb-4 text-slate-800">1. Partisi Rekursif: Membangun Pohon</h3>
+                <p class="text-slate-600 mb-4">Proses ini adalah jantung dari algoritma. Dimulai dari root node (keseluruhan data), algoritma secara rekursif (berulang) melakukan langkah-langkah berikut dengan strategi "pecah dan taklukkan":</p>
+                <ol class="list-decimal list-inside mt-4 space-y-3 text-slate-700">
+                    <li><strong>Pilih Atribut Terbaik:</strong> Menggunakan kriteria pemisahan (seperti Gini Impurity atau Information Gain), algoritma mengevaluasi semua kemungkinan pemisahan pada semua fitur. Pemisahan terbaik adalah yang menghasilkan node anak paling 'murni'.</li>
+                    <li><strong>Lakukan Pemisahan:</strong> Dataset dibagi menjadi subset berdasarkan aturan dari pemisahan terbaik (misalnya, 'Pendapatan > 5 juta' dan 'Pendapatan <= 5 juta').</li>
+                    <li><strong>Ulangi:</strong> Proses ini diulangi untuk setiap subset (yang sekarang menjadi node baru) hingga salah satu kriteria berhenti terpenuhi (misalnya, node sudah murni atau mencapai kedalaman maksimum).</li>
+                </ol>
+            </div>
+
+            <!-- Kriteria Pemisahan -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <h3 class="text-2xl font-semibold mb-4 text-slate-800">2. Kriteria Pemisahan: Gini Impurity vs. Information Gain</h3>
+                <p class="text-slate-600 mb-6">Ini adalah dua metrik utama untuk mengukur "kemurnian" (atau "ketidakmurnian") sebuah node. Tujuannya adalah menemukan pemisahan yang menghasilkan penurunan ketidakmurnian terbesar.</p>
+                <div class="text-center mb-6">
+                    <button id="toggleMetricBtn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                        Ganti ke Information Gain (Entropy)
+                    </button>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-8 items-center">
+                    <div class="w-full lg:w-1/2">
+                        <div class="chart-container mx-auto">
+                            <canvas id="splitCriteriaChart"></canvas>
+                        </div>
+                    </div>
+                    <div id="metric-explanation" class="w-full lg:w-1/2 p-6 bg-slate-50 rounded-lg border">
+                        <!-- Penjelasan akan diisi oleh JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Jenis Algoritma -->
+        <section id="jenis" class="mb-20 scroll-mt-24">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-slate-900">Jenis-Jenis Algoritma Decision Tree</h2>
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white p-8 rounded-2xl shadow-lg mb-6">
+                    <h3 class="text-2xl font-bold mb-3 text-slate-800">Membedakan Struktur Data Tree dan Algoritma Decision Tree</h3>
+                    <p class="text-slate-600">Penting untuk dipahami bahwa algoritma Decision Tree dalam machine learning adalah aplikasi spesifik dari konsep struktur data tree yang lebih luas. Struktur data tree seperti Binary Search Tree (BST), AVL Tree, atau B-Tree dirancang untuk penyimpanan dan pencarian data yang efisien, misalnya dalam sistem basis data. Sementara itu, algoritma seperti ID3, C4.5, dan CART menggunakan struktur pohon untuk membangun model prediktif yang "belajar" dari data melalui proses yang disebut partisi rekursif.</p>
+                </div>
+
+                <div class="flex justify-center mb-6 bg-slate-200 rounded-full p-1">
+                    <button class="tab-button flex-1 py-2 px-4 rounded-full text-sm sm:text-base font-semibold transition-colors duration-300 active" data-target="id3">ID3</button>
+                    <button class="tab-button flex-1 py-2 px-4 rounded-full text-sm sm:text-base font-semibold transition-colors duration-300" data-target="c45">C4.5</button>
+                    <button class="tab-button flex-1 py-2 px-4 rounded-full text-sm sm:text-base font-semibold transition-colors duration-300" data-target="cart">CART</button>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-lg min-h-[320px]">
+                    <div id="id3" class="tab-content">
+                        <h3 class="text-2xl font-bold mb-3 text-sky-600">ID3 (Iterative Dichotomiser 3)</h3>
+                        <p class="text-slate-600 mb-4">Dikembangkan oleh Ross Quinlan, ID3 adalah salah satu algoritma pohon keputusan paling awal. Algoritma ini membangun pohon menggunakan pendekatan partisi rekursif yang bersifat top-down dan greedy. Artinya, ia memulai dari akar dengan seluruh data, lalu secara rakus memilih fitur terbaik untuk memecah data menjadi subset yang lebih murni, dan mengulangi proses ini hingga kondisi berhenti terpenuhi.</p>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-800">Kriteria Pemisahan: Entropy & Information Gain</h4>
+                            <p class="text-blue-700 mt-1">ID3 menggunakan Entropy untuk mengukur ketidakmurnian (impurity) atau keacakan sebuah node. Tujuannya adalah memilih fitur yang memberikan Information Gain (pengurangan entropy) tertinggi, karena pemisahan tersebut paling efektif dalam mengurangi ketidakpastian.</p>
+                        </div>
+                        <p class="text-slate-600 mt-4"><strong>Keterbatasan:</strong> ID3 hanya dapat menangani fitur kategorikal dan cenderung bias terhadap fitur dengan banyak nilai unik.</p>
+                    </div>
+                    <div id="c45" class="tab-content hidden">
+                        <h3 class="text-2xl font-bold mb-3 text-sky-600">C4.5</h3>
+                        <p class="text-slate-600 mb-4">C4.5 adalah penerus dari ID3, juga dikembangkan oleh Ross Quinlan. Algoritma ini membawa beberapa perbaikan signifikan untuk mengatasi kelemahan pendahulunya.</p>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-green-800">Kriteria Pemisahan: Gain Ratio</h4>
+                            <p class="text-green-700 mt-1">Untuk mengatasi bias ID3 terhadap fitur dengan banyak nilai, C4.5 menggunakan Gain Ratio. Metrik ini menormalisasi Information Gain dengan membaginya dengan Split Info, yang pada dasarnya "menghukum" fitur yang menghasilkan banyak cabang. Ini mengarah pada pemilihan fitur yang lebih seimbang dan adil.</p>
+                        </div>
+                        <p class="text-slate-600 mt-4"><strong>Kelebihan Lain:</strong> C4.5 dapat menangani fitur numerik (kontinu) dengan mencari titik pemisahan optimal, menangani nilai yang hilang (missing values), dan menyertakan mekanisme post-pruning untuk mengurangi overfitting.</p>
+                    </div>
+                    <div id="cart" class="tab-content hidden">
+                        <h3 class="text-2xl font-bold mb-3 text-sky-600">CART (Classification and Regression Trees)</h3>
+                        <p class="text-slate-600 mb-4">CART adalah algoritma serbaguna yang menjadi dasar bagi banyak implementasi modern. Seperti ID3, ia juga menggunakan pendekatan top-down dan greedy. Perbedaan utamanya adalah ia selalu menghasilkan pohon biner, di mana setiap simpul internal hanya memiliki dua cabang keluar.</p>
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-purple-800">Kriteria Pemisahan: Gini Impurity & Variance Reduction</h4>
+                            <ul class="text-purple-700 mt-1 list-disc list-inside">
+                                <li><strong>Untuk Klasifikasi:</strong> CART menggunakan Gini Impurity, yang mengukur probabilitas kesalahan klasifikasi acak. Metrik ini lebih efisien secara komputasi daripada Entropy karena tidak melibatkan perhitungan logaritma.</li>
+                                <li><strong>Untuk Regresi:</strong> CART menggunakan Variance Reduction (pengurangan varians) untuk menemukan pemisahan yang menghasilkan grup data dengan nilai target yang paling homogen (serupa).</li>
+                            </ul>
+                        </div>
+                         <p class="text-slate-600 mt-4"><strong>Fleksibilitas:</strong> Kemampuannya untuk menangani tugas klasifikasi dan regresi dalam satu kerangka kerja yang konsisten membuatnya sangat populer dalam praktik.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Overfitting Section -->
+        <section id="overfitting" class="py-16 bg-white rounded-lg shadow-lg mb-16 p-8 scroll-mt-24">
+            <h2 class="text-3xl font-bold text-center mb-2 text-gray-800">Menangani Overfitting dengan Pruning</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">Overfitting terjadi ketika pohon menjadi terlalu kompleks dan "menghafal" data training, sehingga performanya buruk pada data baru. Pruning (pemangkasan) adalah teknik untuk menyederhanakan pohon dan meningkatkan kemampuannya untuk generalisasi.</p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="p-6 border border-gray-200 rounded-lg">
+                    <h3 class="text-xl font-semibold text-red-600 mb-2">Pohon Overfit (Terlalu Kompleks)</h3>
+                    <p class="text-gray-600 mb-4">Pohon ini memiliki banyak cabang dan kedalaman yang besar, menangkap noise dan outlier dari data training.</p>
+                    <ul class="list-disc list-inside text-sm text-gray-700">
+                        <li>Sangat akurat pada data training.</li>
+                        <li>Performa buruk pada data testing/validasi.</li>
+                        <li>Sulit diinterpretasikan karena terlalu rumit.</li>
+                    </ul>
+                </div>
+                <div class="p-6 border-2 border-green-500 rounded-lg bg-green-50">
+                    <h3 class="text-xl font-semibold text-green-700 mb-2">Pohon Hasil Pruning (Optimal)</h3>
+                    <p class="text-gray-600 mb-4">Pohon yang lebih sederhana setelah beberapa cabang yang kurang informatif dipangkas.</p>
+                     <ul class="list-disc list-inside text-sm text-gray-700">
+                        <li>Mungkin sedikit kurang akurat pada data training.</li>
+                        <li><strong>Performa jauh lebih baik</strong> pada data baru (generalisasi).</li>
+                        <li>Lebih mudah diinterpretasikan.</li>
+                    </ul>
+                </div>
+            </div>
+             <div class="mt-8">
+                 <h3 class="text-2xl font-semibold text-center mb-6">Dua Strategi Utama Pruning</h3>
+                 <div class="flex flex-col md:flex-row gap-6">
+                     <div class="w-full md:w-1/2 p-4 border rounded-lg">
+                         <h4 class="font-bold">1. Pre-pruning (Early Stopping)</h4>
+                         <p class="text-gray-600">Menghentikan pertumbuhan pohon lebih awal dengan menetapkan batasan, seperti:
+                             <code class="text-sm bg-gray-200 p-1 rounded">max_depth</code>,
+                             <code class="text-sm bg-gray-200 p-1 rounded">min_samples_leaf</code>, atau
+                             <code class="text-sm bg-gray-200 p-1 rounded">min_impurity_decrease</code>.
+                         </p>
+                     </div>
+                     <div class="w-full md:w-1/2 p-4 border rounded-lg">
+                         <h4 class="font-bold">2. Post-pruning (CCP)</h4>
+                         <p class="text-gray-600">Membangun pohon secara penuh terlebih dahulu, lalu memangkas cabang yang paling tidak penting. Metode yang populer adalah Cost Complexity Pruning (CCP) yang menggunakan parameter <code class="text-sm bg-gray-200 p-1 rounded">alpha</code>.</p>
+                     </div>
+                 </div>
+             </div>
+        </section>
+
+        <!-- Studi Kasus (Aplikasi) -->
+        <section id="aplikasi" class="mb-20 scroll-mt-24">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-slate-900">Aplikasi Interaktif: Prediksi dari Data CSV</h2>
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">
+                    Aplikasi ini sekarang secara dinamis membangun pohon keputusan dari dataset CSV. Coba ubah kondisi cuaca di bawah untuk melihat prediksi dari pohon yang telah "belajar" dari data.
+                </p>
+                
+                <!-- Kontrol Input -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 p-6 bg-slate-50 rounded-lg border">
+                    <div>
+                        <label for="cuaca" class="block text-sm font-medium text-slate-700 mb-1">Cuaca</label>
+                        <select id="cuaca" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500">
+                            <option>Cerah</option>
+                            <option>Berawan</option>
+                            <option>Hujan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="temperatur" class="block text-sm font-medium text-slate-700 mb-1">Temperatur</label>
+                        <select id="temperatur" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500">
+                            <option>Panas</option>
+                            <option>Sedang</option>
+                            <option>Dingin</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="kelembapan" class="block text-sm font-medium text-slate-700 mb-1">Kelembapan</label>
+                        <select id="kelembapan" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500">
+                            <option>Tinggi</option>
+                            <option>Normal</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="angin" class="block text-sm font-medium text-slate-700 mb-1">Angin</label>
+                        <select id="angin" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500">
+                            <option>Lemah</option>
+                            <option>Kuat</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Hasil dan Visualisasi Pohon -->
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    <!-- Hasil Prediksi -->
+                    <div class="w-full lg:w-1/3 space-y-4">
+                        <h3 class="text-2xl font-semibold text-slate-800">Hasil Prediksi</h3>
+                        <div id="prediction-result" class="p-6 rounded-lg text-center transition-all duration-300">
+                            <div class="loader"></div>
+                            <p class="mt-2 text-slate-500">Membangun model...</p>
+                        </div>
+                        <button id="explain-button" class="gemini-button w-full bg-sky-500 text-white font-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2" disabled>
+                            ✨ Jelaskan Logika Keputusan
+                        </button>
+                        <div id="explanation-box" class="p-4 bg-slate-100 rounded-lg text-sm text-slate-700 min-h-[100px]">
+                            <!-- Penjelasan dari Gemini akan muncul di sini -->
+                        </div>
+                    </div>
+                    <!-- Visualisasi Pohon -->
+                    <div class="w-full lg:w-2/3">
+                        <h3 class="text-2xl font-semibold mb-4 text-slate-800">Visualisasi Jalur Keputusan</h3>
+                        <div id="tree-visualization" class="bg-slate-50 p-4 rounded-lg text-xs text-center font-mono">
+                            <!-- Visualisasi akan diisi oleh JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Perbandingan Algoritma -->
+        <section id="perbandingan" class="mb-20 scroll-mt-24">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-slate-900">Decision Tree vs. Algoritma Lain</h2>
+            <div class="bg-white p-8 rounded-2xl shadow-lg">
+                <p class="text-center text-slate-600 mb-8 max-w-3xl mx-auto">Tidak ada satu algoritma yang sempurna untuk semua masalah. Memahami kapan harus menggunakan Decision Tree dibandingkan model lain adalah kunci kesuksesan. Pilih algoritma di bawah untuk membandingkannya dengan Decision Tree.</p>
+                <div class="flex flex-col md:flex-row items-center justify-center mb-8">
+                     <label for="algo-select" class="mr-4 font-semibold text-slate-700">Bandingkan dengan:</label>
+                     <select id="algo-select" class="p-2 border border-slate-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500">
+                         <option value="rf">Random Forest</option>
+                         <option value="svm">Support Vector Machine (SVM)</option>
+                         <option value="lr">Logistic Regression</option>
+                     </select>
+                </div>
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    <div class="w-full lg:w-1/2">
+                        <div class="chart-container mx-auto">
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
+                    </div>
+                    <div id="comparison-text" class="w-full lg:w-1/2 p-6 bg-slate-50 rounded-lg border">
+                        <!-- Konten perbandingan akan diisi oleh JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Kelebihan dan Kekurangan -->
+        <section id="kelebihan-kekurangan" class="mb-20 scroll-mt-24">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-slate-900">Kelebihan & Kekurangan</h2>
+            <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <div class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+                    <h3 class="text-2xl font-semibold mb-4 text-green-800">Kelebihan (Pros)</h3>
+                    <ul class="space-y-3 text-green-900 list-disc list-inside">
+                        <li><strong>Mudah Diinterpretasikan:</strong> Modelnya dapat divisualisasikan dan dipahami bahkan oleh non-teknisi (model "white-box").</li>
+                        <li><strong>Persiapan Data Minimal:</strong> Tidak memerlukan normalisasi atau penskalaan data numerik.</li>
+                        <li><strong>Fleksibel:</strong> Mampu menangani data numerik dan kategorikal serta hubungan non-linier.</li>
+                        <li><strong>Seleksi Fitur Implisit:</strong> Struktur pohon secara alami menunjukkan fitur mana yang paling penting.</li>
+                    </ul>
+                </div>
+                <div class="bg-red-50 p-6 rounded-lg border-l-4 border-red-500">
+                    <h3 class="text-2xl font-semibold mb-4 text-red-800">Kekurangan (Cons)</h3>
+                    <ul class="space-y-3 text-red-900 list-disc list-inside">
+                        <li><strong>Rentan Overfitting:</strong> Cenderung membuat pohon yang terlalu kompleks jika tidak dikontrol dengan teknik pruning.</li>
+                        <li><strong>Tidak Stabil:</strong> Perubahan kecil pada data dapat menghasilkan pohon yang sangat berbeda.</li>
+                        <li><strong>Bias:</strong> Pohon bisa menjadi bias jika beberapa kelas mendominasi dataset.</li>
+                        <li><strong>Kurang Optimal:</strong> Algoritma greedy* tidak menjamin akan menemukan pohon yang optimal secara global.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Kesimpulan dan Referensi -->
+        <section id="kesimpulan" class="scroll-mt-24">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-slate-900">Kesimpulan & Referensi</h2>
+            <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+                <h3 class="text-2xl font-semibold mb-4 text-slate-800">Rangkuman Komprehensif</h3>
+                <p class="text-slate-600 mb-6">
+                    Pohon Keputusan adalah algoritma *supervised learning* yang fundamental, kuat, dan luar biasa intuitif. Kekuatan utamanya terletak pada transparansi dan kemudahan interpretasinya, yang memungkinkannya berfungsi sebagai model "white box". Kemampuannya untuk menangani berbagai tipe data dengan persiapan minimal dan secara implisit melakukan seleksi fitur menambah daya tariknya. Namun, ia rentan terhadap *overfitting*, yang dapat diatasi dengan teknik *pruning*.
+                </p>
+
+                <h3 class="text-2xl font-semibold mb-4 text-slate-800">Arah Masa Depan dan Peran dalam Ensemble Learning</h3>
+                <p class="text-slate-600 mb-8">
+                    Meskipun pohon keputusan tunggal mungkin tidak selalu menjadi model paling akurat, perannya sebagai "blok bangunan" fundamental untuk algoritma *ensemble* yang lebih kuat seperti Random Forests dan Gradient Boosting Machines menjadikannya tetap relevan. Memahami Decision Tree adalah prasyarat esensial untuk menguasai teknik *ensemble* yang lebih canggih.
+                </p>
+
+                <h3 class="text-2xl font-semibold mb-4 text-slate-800">Bacaan Lanjutan & Referensi</h3>
+                <div class="space-y-6">
+                    <div>
+                        <h4 class="text-lg font-semibold text-sky-700">Karya Seminal</h4>
+                        <ol class="list-decimal list-inside mt-2 space-y-4 text-slate-600">
+                            <li>
+                                <strong>Quinlan, J. R. (1986). Induction of Decision Trees.</strong>
+                                <p class="text-sm pl-6">Paper mani yang memperkenalkan algoritma ID3, meletakkan dasar penggunaan Entropy dan Information Gain.</p>
+                            </li>
+                            <li>
+                                <strong>Breiman, L., et al. (1984). Classification and Regression Trees.</strong>
+                                <p class="text-sm pl-6">Teks definitif yang memperkenalkan algoritma CART, mempopulerkan Gini Impurity dan *cost-complexity pruning*.</p>
+                            </li>
+                            <li>
+                                <strong>Quinlan, J. R. (1993). C4.5: Programs for Machine Learning.</strong>
+                                <p class="text-sm pl-6">Merinci C4.5, penerus ID3 dengan kemampuan menangani data numerik, nilai yang hilang, dan *pruning* canggih.</p>
+                            </li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-semibold text-sky-700">Sumber Daya Web</h4>
+                        <ul class="list-disc list-inside mt-2 space-y-2 text-slate-600">
+                            <li>Dokumentasi <a href="https://scikit-learn.org/stable/modules/tree.html" target="_blank" class="text-sky-600 hover:underline">Scikit-learn</a> untuk implementasi praktis di Python.</li>
+                            <li>Tutorial dari platform seperti <a href="https://www.geeksforgeeks.org/decision-tree/" target="_blank" class="text-sky-600 hover:underline">GeeksforGeeks</a> dan <a href="https://towardsdatascience.com/decision-trees-in-machine-learning-641b9c4e8052" target="_blank" class="text-sky-600 hover:underline">Towards Data Science</a>.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-slate-300 text-center p-6 mt-20">
+        <p>&copy; 2025 Panduan Interaktif Decision Tree. Dibuat untuk tujuan edukasi.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Mobile Menu Toggle ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // --- Anatomy Hover Effect ---
+            const anatomyNodes = document.querySelectorAll('#konsep .tree-node');
+            const infoBox = document.getElementById('anatomy-info-box');
+            const originalInfo = infoBox.innerHTML;
+
+            anatomyNodes.forEach(node => {
+                node.addEventListener('mouseover', () => {
+                    infoBox.innerHTML = `
+                        <h4 class="font-bold text-sky-800 text-lg">${node.dataset.title}</h4>
+                        <p class="text-sky-700">${node.dataset.text}</p>
+                    `;
+                });
+                node.addEventListener('mouseout', () => {
+                    infoBox.innerHTML = originalInfo;
+                });
+            });
+
+            // --- Algorithm Tabs ---
+            const tabButtons = document.querySelectorAll('#jenis .tab-button');
+            const tabContents = document.querySelectorAll('#jenis .tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    tabContents.forEach(content => content.classList.add('hidden'));
+                    document.getElementById(button.dataset.target).classList.remove('hidden');
+                });
+            });
+
+            // --- Splitting Criteria Chart ---
+            let splitCriteriaChart;
+            const toggleMetricBtn = document.getElementById('toggleMetricBtn');
+            const metricExplanationDiv = document.getElementById('metric-explanation');
+            let currentMetric = 'gini';
+
+            const splitCriteriaData = {
+                gini: {
+                    labels: ['Node Awal', 'Pemisahan 1 (Anak 1)', 'Pemisahan 1 (Anak 2)'],
+                    values: [0.45, 0.32, 0.1],
+                    title: 'Gini Impurity',
+                    explanationTitle: 'Gini Impurity',
+                    explanationText: 'Mengukur probabilitas sebuah elemen yang dipilih secara acak akan salah diklasifikasikan. Nilai 0 berarti murni sempurna. Tujuannya adalah meminimalkan Gini Impurity setelah pemisahan.'
+                },
+                entropy: {
+                    labels: ['Node Awal', 'Pemisahan 1 (Anak 1)', 'Pemisahan 1 (Anak 2)'],
+                    values: [0.94, 0.81, 0.5],
+                    title: 'Entropy',
+                    explanationTitle: 'Information Gain (berbasis Entropy)',
+                    explanationText: 'Mengukur tingkat ketidakpastian atau keacakan dalam sebuah node. Information Gain adalah penurunan Entropy setelah pemisahan. Tujuannya adalah memaksimalkan Information Gain.'
+                }
+            };
+
+            function createOrUpdateSplitChart() {
+                const data = splitCriteriaData[currentMetric];
+                metricExplanationDiv.innerHTML = `<h4 class="font-bold text-lg">${data.explanationTitle}</h4><p class="mt-2">${data.explanationText}</p>`;
+                
+                if (splitCriteriaChart) {
+                    splitCriteriaChart.data.labels = data.labels;
+                    splitCriteriaChart.data.datasets[0].data = data.values;
+                    splitCriteriaChart.options.plugins.title.text = `Contoh Penurunan ${data.title}`;
+                    splitCriteriaChart.update();
+                } else {
+                    const ctx = document.getElementById('splitCriteriaChart').getContext('2d');
+                    splitCriteriaChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: data.title,
+                                data: data.values,
+                                backgroundColor: 'rgba(14, 165, 233, 0.6)',
+                                borderColor: 'rgba(14, 165, 233, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: { y: { beginAtZero: true, suggestedMax: 1 } },
+                            plugins: {
+                                legend: { display: false },
+                                title: { display: true, text: `Contoh Penurunan ${data.title}`, font: { size: 16 } }
+                            }
+                        }
+                    });
+                }
+            }
+
+            toggleMetricBtn.addEventListener('click', () => {
+                currentMetric = currentMetric === 'gini' ? 'entropy' : 'gini';
+                toggleMetricBtn.textContent = currentMetric === 'gini' ? 'Ganti ke Information Gain (Entropy)' : 'Ganti ke Gini Impurity';
+                createOrUpdateSplitChart();
+            });
+            
+            // --- Interactive Case Study ---
+            const inputs = {
+                cuaca: document.getElementById('cuaca'),
+                temperatur: document.getElementById('temperatur'),
+                kelembapan: document.getElementById('kelembapan'),
+                angin: document.getElementById('angin')
+            };
+            const predictionResultDiv = document.getElementById('prediction-result');
+            const treeVizDiv = document.getElementById('tree-visualization');
+            const explainButton = document.getElementById('explain-button');
+            const explanationBox = document.getElementById('explanation-box');
+
+            let decisionTreeModel = {};
+            let lastPrediction = {};
+
+            // --- Decision Tree Implementation ---
+            function parseCSV(csv) {
+                const lines = csv.trim().split('\n');
+                const headers = lines[0].split(',');
+                const data = [];
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i]) continue;
+                    const values = lines[i].split(',');
+                    const entry = {};
+                    headers.forEach((header, index) => {
+                        entry[header.trim()] = values[index].trim();
+                    });
+                    data.push(entry);
+                }
+                return data;
+            }
+
+            function calculateEntropy(data) {
+                const targetAttribute = 'main';
+                const classCounts = {};
+                data.forEach(row => {
+                    const label = row[targetAttribute];
+                    classCounts[label] = (classCounts[label] || 0) + 1;
+                });
+
+                let entropy = 0;
+                const total = data.length;
+                if (total === 0) return 0;
+                for (let label in classCounts) {
+                    const probability = classCounts[label] / total;
+                    entropy -= probability * Math.log2(probability);
+                }
+                return entropy;
+            }
+
+            function calculateInformationGain(data, attribute) {
+                const totalEntropy = calculateEntropy(data);
+                const uniqueValues = [...new Set(data.map(row => row[attribute]))];
+                let weightedEntropy = 0;
+                
+                uniqueValues.forEach(value => {
+                    const subset = data.filter(row => row[attribute] === value);
+                    const subsetEntropy = calculateEntropy(subset);
+                    weightedEntropy += (subset.length / data.length) * subsetEntropy;
+                });
+
+                return totalEntropy - weightedEntropy;
+            }
+
+            function findBestAttribute(data, attributes) {
+                let bestAttribute = '';
+                let maxGain = -1;
+
+                attributes.forEach(attribute => {
+                    const gain = calculateInformationGain(data, attribute);
+                    if (gain > maxGain) {
+                        maxGain = gain;
+                        bestAttribute = attribute;
+                    }
+                });
+                return bestAttribute;
+            }
+            
+            function buildTree(data, attributes) {
+                const targetAttribute = 'main';
+                const classLabels = data.map(row => row[targetAttribute]);
+                const majorityClass = classLabels.reduce((a, b, i, arr) => (arr.filter(v => v === a).length >= arr.filter(v => v === b).length ? a : b), null);
+
+                if (new Set(classLabels).size === 1) {
+                    return { type: 'leaf', prediction: classLabels[0] };
+                }
+
+                if (attributes.length === 0) {
+                    return { type: 'leaf', prediction: majorityClass };
+                }
+
+                const bestAttribute = findBestAttribute(data, attributes);
+                const remainingAttributes = attributes.filter(attr => attr !== bestAttribute);
+                const uniqueValues = [...new Set(data.map(row => row[bestAttribute]))];
+                
+                const branches = {};
+                uniqueValues.forEach(value => {
+                    const subset = data.filter(row => row[bestAttribute] === value);
+                    branches[value] = buildTree(subset, remainingAttributes);
+                });
+
+                return {
+                    type: 'node',
+                    attribute: bestAttribute,
+                    branches: branches,
+                    fallback: majorityClass // Fallback prediction
+                };
+            }
+
+            function getPrediction(tree, data) {
+                 let currentNode = tree;
+                 let path = [];
+                 while (currentNode.type === 'node') {
+                     path.push(currentNode.attribute);
+                     const value = data[currentNode.attribute];
+                     path.push(value.toLowerCase());
+                     
+                     if (currentNode.branches[value]) {
+                        currentNode = currentNode.branches[value];
+                     } else {
+                        // If the specific value was not in the training data for this branch,
+                        // use the fallback prediction of the current node.
+                        currentNode = { type: 'leaf', prediction: currentNode.fallback };
+                        break;
+                     }
+                 }
+                 const decision = currentNode.prediction;
+                 let reason = "Prediksi berdasarkan pohon yang dibangun dari data.";
+                 return { decision, reason, path, data };
+            }
+
+            function updatePrediction() {
+                if (Object.keys(decisionTreeModel).length === 0) return;
+                const currentData = {
+                    cuaca: inputs.cuaca.value,
+                    temperatur: inputs.temperatur.value,
+                    kelembapan: inputs.kelembapan.value,
+                    angin: inputs.angin.value
+                };
+                lastPrediction = getPrediction(decisionTreeModel, currentData);
+                
+                predictionResultDiv.innerHTML = `<p class="text-5xl font-bold mb-2 ${lastPrediction.decision === 'Ya' ? 'text-green-500' : 'text-red-500'}">${lastPrediction.decision === 'Ya' ? 'Main' : 'Tidak Main'}</p><p class="text-slate-600">${lastPrediction.reason}</p>`;
+                predictionResultDiv.className = `p-6 rounded-lg text-center transition-all duration-300 ${lastPrediction.decision === 'Ya' ? 'bg-green-50' : 'bg-red-50'}`;
+                updateTreeVisualization(lastPrediction.path);
+                explanationBox.innerHTML = '<p class="text-slate-500 italic">Klik tombol di atas untuk mendapatkan penjelasan dari AI.</p>';
+            }
+
+            function updateTreeVisualization(path) {
+                const idMap = {
+                    'cuaca': 'outlook', 'cerah': 'sunny', 'berawan': 'overcast', 'hujan': 'rainy',
+                    'kelembapan': 'humidity', 'tinggi': 'high', 'normal': 'normal',
+                    'angin': 'windy', 'kuat': 'strong', 'lemah': 'weak'
+                };
+                const mappedPath = path.map(p => idMap[p] || p);
+                const isHighlighted = (id) => mappedPath.includes(id) ? 'highlight-path' : '';
+
+                treeVizDiv.innerHTML = `
+                    <div class="p-2 rounded-md bg-emerald-200 inline-block ${isHighlighted('outlook')}" id="viz-outlook">Cuaca?</div>
+                    <div class="flex justify-center my-2"><div class="h-8 w-px bg-slate-400 transform -rotate-45"></div><div class="h-8 w-px bg-slate-400"></div><div class="h-8 w-px bg-slate-400 transform rotate-45"></div></div>
+                    <div class="flex justify-around">
+                        <div class="flex flex-col items-center">
+                            <div class="p-2 rounded-md bg-cyan-200 inline-block ${isHighlighted('sunny')}" id="viz-sunny">Cerah</div>
+                            <div class="h-8 w-px bg-slate-400 my-2"></div>
+                            <div class="p-2 rounded-md bg-emerald-200 inline-block ${isHighlighted('humidity')}" id="viz-humidity">Kelembapan?</div>
+                            <div class="flex justify-center my-2"><div class="h-8 w-px bg-slate-400 transform -rotate-45"></div><div class="h-8 w-px bg-slate-400 transform rotate-45"></div></div>
+                            <div class="flex gap-4">
+                                <div class="p-2 rounded-md bg-amber-200 inline-block ${isHighlighted('high')}" id="viz-high">Tinggi -> Tidak Main</div>
+                                <div class="p-2 rounded-md bg-amber-200 inline-block ${isHighlighted('normal')}" id="viz-normal">Normal -> Main</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center"><div class="p-2 rounded-md bg-cyan-200 inline-block ${isHighlighted('overcast')}" id="viz-overcast">Berawan -> Main</div></div>
+                        <div class="flex flex-col items-center">
+                            <div class="p-2 rounded-md bg-cyan-200 inline-block ${isHighlighted('rainy')}" id="viz-rainy">Hujan</div>
+                            <div class="h-8 w-px bg-slate-400 my-2"></div>
+                            <div class="p-2 rounded-md bg-emerald-200 inline-block ${isHighlighted('windy')}" id="viz-windy">Angin?</div>
+                            <div class="flex justify-center my-2"><div class="h-8 w-px bg-slate-400 transform -rotate-45"></div><div class="h-8 w-px bg-slate-400 transform rotate-45"></div></div>
+                            <div class="flex gap-4">
+                                 <div class="p-2 rounded-md bg-amber-200 inline-block ${isHighlighted('strong')}" id="viz-strong">Kuat -> Tidak Main</div>
+                                 <div class="p-2 rounded-md bg-amber-200 inline-block ${isHighlighted('weak')}" id="viz-weak">Lemah -> Main</div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+            
+            async function getExplanationFromGemini() {
+                if (!lastPrediction.data) return;
+                explanationBox.innerHTML = '<div class="loader"></div><p class="text-center mt-2 text-slate-500">AI sedang menganalisis...</p>';
+                explainButton.disabled = true;
+                explainButton.classList.add('opacity-50', 'cursor-not-allowed');
+                
+                const apiKey = "MASUKKAN_API_KEY_ANDA_DI_SINI"; 
+                
+                if (apiKey === "MASUKKAN_API_KEY_ANDA_DI_SINI") {
+                    explanationBox.innerHTML = '<p class="text-red-500"><strong>Error:</strong> API Key belum dimasukkan. Silakan edit file HTML dan masukkan API Key Anda.</p>';
+                    explainButton.disabled = false;
+                    explainButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    return;
+                }
+
+                const { cuaca, temperatur, kelembapan, angin } = lastPrediction.data;
+                const { decision, path } = lastPrediction;
+                const pathString = path.join(" -> ");
+                const prompt = `Anda adalah seorang analis data yang ahli dalam menjelaskan model machine learning. Jelaskan logika dari aturan pohon keputusan berikut dengan cara yang sederhana dan mudah dipahami.
+                Konteks: Kita memprediksi apakah seseorang akan 'Main' tenis atau 'Tidak Main' berdasarkan kondisi cuaca.
+                Kondisi Input:
+                - Cuaca: ${cuaca}
+                - Temperatur: ${temperatur}
+                - Kelembapan: ${kelembapan}
+                - Angin: ${angin}
+                Jalur Keputusan yang Diambil Pohon: ${pathString}
+                Hasil Prediksi Akhir: ${decision === 'Ya' ? 'Main' : 'Tidak Main'}
+                Tolong jelaskan langkah demi langkah mengapa pohon ini sampai pada kesimpulan tersebut berdasarkan jalur yang diambil. Mulailah dengan menganalisis node pertama dan lanjutkan hingga ke keputusan akhir.`;
+                try {
+                    let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                    const payload = { contents: chatHistory };
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error(`API error: ${response.status} ${response.statusText}`);
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        explanationBox.innerHTML = text.replace(/\n/g, '<br>');
+                    } else {
+                        explanationBox.innerHTML = '<p class="text-red-500">Maaf, AI tidak dapat memberikan penjelasan saat ini. Coba lagi nanti.</p>';
+                    }
+                } catch (error) {
+                    console.error("Error calling Gemini API:", error);
+                    explanationBox.innerHTML = `<p class="text-red-500">Terjadi kesalahan saat menghubungi AI: ${error.message}. Periksa konsol untuk detail.</p>`;
+                } finally {
+                    explainButton.disabled = false;
+                    explainButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }
+
+            // --- Algorithm Comparison Chart ---
+            let comparisonChart;
+            const algoSelect = document.getElementById('algo-select');
+            const comparisonTextDiv = document.getElementById('comparison-text');
+            
+            const comparisonData = {
+                labels: ['Interpretasi', 'Akurasi', 'Handle Non-Linear', 'Kecepatan Training', 'Tahan Overfitting'],
+                dt: {
+                    label: 'Decision Tree',
+                    data: [9, 7, 8, 9, 4],
+                    borderColor: 'rgba(239, 68, 68, 1)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                },
+                rf: {
+                    label: 'Random Forest',
+                    data: [4, 9, 9, 5, 8],
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                    text: `
+                        <h4 class="text-xl font-semibold mb-2 text-green-700">vs. Random Forest</h4>
+                        <p class="text-slate-600 mb-2">Random Forest adalah kumpulan dari banyak Decision Tree (ensemble). Ia mengurangi risiko overfitting secara signifikan dengan mengambil keputusan berdasarkan suara mayoritas dari banyak pohon.</p>
+                        <strong class="text-slate-800">Kapan memilih Random Forest?</strong>
+                        <ul class="list-disc list-inside mt-2 text-slate-700 space-y-1">
+                            <li>Saat <strong>akurasi dan stabilitas</strong> adalah prioritas utama.</li>
+                            <li>Ketika Anda tidak terlalu membutuhkan interpretasi model yang detail.</li>
+                        </ul>`
+                },
+                svm: {
+                    label: 'Support Vector Machine',
+                    data: [3, 8, 7, 4, 7],
+                    borderColor: 'rgba(139, 92, 246, 1)',
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                    text: `
+                        <h4 class="text-xl font-semibold mb-2 text-purple-700">vs. Support Vector Machine (SVM)</h4>
+                        <p class="text-slate-600 mb-2">SVM bekerja dengan mencari hyperplane (garis atau bidang) terbaik yang memisahkan kelas data dengan margin terbesar. SVM bisa menjadi 'kotak hitam' yang sulit diinterpretasikan.</p>
+                        <strong class="text-slate-800">Kapan memilih SVM?</strong>
+                        <ul class="list-disc list-inside mt-2 text-slate-700 space-y-1">
+                            <li>Untuk data berdimensi tinggi (banyak fitur).</li>
+                            <li>Ketika batas keputusan yang jelas dan optimal diperlukan.</li>
+                        </ul>`
+                },
+                lr: {
+                    label: 'Logistic Regression',
+                    data: [8, 6, 2, 10, 9],
+                    borderColor: 'rgba(245, 158, 11, 1)',
+                    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                    text: `
+                        <h4 class="text-xl font-semibold mb-2 text-amber-700">vs. Logistic Regression</h4>
+                        <p class="text-slate-600 mb-2">Ini adalah model klasifikasi linier yang memprediksi probabilitas. Model ini sangat cepat dan mudah diinterpretasikan, namun kurang baik dalam menangani hubungan data yang kompleks.</p>
+                        <strong class="text-slate-800">Kapan memilih Logistic Regression?</strong>
+                        <ul class="list-disc list-inside mt-2 text-slate-700 space-y-1">
+                            <li>Ketika masalahnya cenderung dapat dipisahkan secara linier.</li>
+                            <li>Saat Anda memerlukan pemahaman tentang pengaruh setiap fitur.</li>
+                            <li>Sebagai *baseline* model yang cepat dan sederhana.</li>
+                        </ul>`
+                }
+            };
+            
+            function createOrUpdateComparisonChart() {
+                const selectedAlgo = algoSelect.value;
+                const datasets = [comparisonData.dt, comparisonData[selectedAlgo]];
+                comparisonTextDiv.innerHTML = comparisonData[selectedAlgo].text;
+
+                if(comparisonChart) {
+                    comparisonChart.data.datasets = datasets;
+                    comparisonChart.update();
+                } else {
+                    const ctx = document.getElementById('comparisonChart').getContext('2d');
+                    comparisonChart = new Chart(ctx, {
+                        type: 'radar',
+                        data: {
+                            labels: comparisonData.labels,
+                            datasets: datasets
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                r: {
+                                    angleLines: { display: true },
+                                    suggestedMin: 0,
+                                    suggestedMax: 10,
+                                    pointLabels: { font: { size: 12 } }
+                                }
+                            },
+                            plugins: {
+                                legend: { position: 'top' }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // --- Initial setup ---
+            async function initializeApp() {
+                try {
+                    const response = await fetch('tennis_data.csv');
+                    if (!response.ok) {
+                        throw new Error('Gagal memuat file tennis_data.csv. Pastikan file berada di folder yang sama.');
+                    }
+                    const csvText = await response.text();
+                    const dataset = parseCSV(csvText);
+                    const attributes = ['cuaca', 'temperatur', 'kelembapan', 'angin'];
+                    decisionTreeModel = buildTree(dataset, attributes);
+                    
+                    console.log("Decision Tree Model Built:", JSON.stringify(decisionTreeModel, null, 2));
+
+                    // Enable UI after model is built
+                    document.getElementById('explain-button').disabled = false;
+                    updatePrediction();
+                    createOrUpdateSplitChart();
+                    createOrUpdateComparisonChart();
+
+                    // Add event listeners
+                    Object.values(inputs).forEach(input => input.addEventListener('change', updatePrediction));
+                    explainButton.addEventListener('click', getExplanationFromGemini);
+                    algoSelect.addEventListener('change', createOrUpdateComparisonChart);
+
+                } catch (error) {
+                    console.error("Initialization Error:", error);
+                    predictionResultDiv.innerHTML = `<p class="text-red-500">${error.message}</p>`;
+                }
+            }
+
+            initializeApp();
+        });
+    </script>
+</body>
+</html>
